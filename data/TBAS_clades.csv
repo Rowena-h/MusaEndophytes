@@ -1,0 +1,17 @@
+class,node,colour,mid,low,lowest
+Taphrinomycetes,1827,#BD72DD,,,
+Pneumocystidomycetes,1831,#4495E2,#69a3e6,#87b2eb,#a1c1ef
+Schizosaccharomycetes,1833,#00AD9A,#4ab9a8,#6fc5b6,#8ed1c4
+Saccharomycetes,1837,#DE63B9,#e57bc3,#eb92cd,#f5bee1
+Orbiliomycetes,1858,#00AABA,,,
+Pezizomycetes,1872,#AF8E00,#bd9d37,#cbad59,#d7bc7a
+Geoglossomycetes,1957,#C7821C,,,
+Leotiomycetes,1960,#00A2D3,#50afd9,#75bce0,#94c9e6
+Sordariomycetes,2041,#D7765B,#e08971,#e79d87,#f4c4b6
+Lichinomycetes,2609,#D766C9,,,
+Coniocybomycetes,2612,red,,,
+Xylonomycetes,2620,grey,,,
+Lecanoromycetes,2624,#00A846,,,
+Eurotiomycetes,2696,#65A100,#7eae38,#95bc5b,#abc97b
+Dothideomycetes,2986,#00AC74,#48b887,#6cc59a,#aadcc1
+Arthoniomycetes,3011,#E16A86,,,
