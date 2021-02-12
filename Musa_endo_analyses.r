@@ -43,8 +43,6 @@ metadata <- read.csv("data/metadata.csv")
 df.all <- subset(df.controls, df.controls$Direct.Sequencing.or.Culture != "Control")
 #Add Musa species
 df.all$MusaSpecies <- metadata$MusaSpecies[match(substring(df.all$Serial.No, 1, 6), metadata$Serial.No)]
-#df.all <- subset(df.all, df.all$Whole.Seed.Half.Seed != "Seed Removed Control")
-#df.all <- df.all[-grep("CONTROL", df.all$Culture.Notes),]
 
 #Read in UNITE blastn results
 unite <- read.csv("data/unite_blast_otus.tsv", sep="\t", header=FALSE, col.names=c("otu", "id", "title", "identity", "evalue", "bitscore"))
@@ -567,6 +565,10 @@ pie.colours <- rbind(data.frame(name=pie.df$class[!duplicated(pie.df$class)],
 pie.colours <- pie.colours[order(pie.colours$name),]
 #Make into vector
 pie.colours <- as.vector(pie.colours$colour[match(all.tax, pie.colours$name)])
+#Edit Fusarium solani name
+pie.df$species[grep("Fusarium solani", pie.df$species)] <- "Fusarium solani \u2020"
+
+set.seed(1)
 
 #Plot piechart
 gg.pie <- ggplot(pie.df) +
@@ -809,6 +811,7 @@ tiff(file=paste0("Supplementary_Figure_1-", Sys.Date(), ".tiff"), height=20, wid
 par(mfrow=c(2,1), mar=c(4,4,2,2))
 NMDS.scree(otu.count.nmds)
 
+set.seed(2)
 #NMDS with optimal dimensions from scree plot
 NMDS <- metaMDS(otu.count.nmds, k=6, trymax=1000, trace=F)
 
@@ -831,6 +834,8 @@ metadata.nmds$Germination <- metadata$ER.shoots[match(metadata.nmds$Serial.No, m
 #Make dataframe of NMDS species scores for ggplot (species=fungal OTUs)
 otu.gg <- as.data.frame(scores(NMDS, "species"))
 otu.gg$label <- df$Species[match(rownames(otu.gg), df$OTU)]
+#Edit Fusarium solani name
+otu.gg$label[grep("Fusarium solani", otu.gg$label)] <- "Fusarium solani \u2020"
 
 #Fit TZ variable to NMDS
 nmds.ordi.tz <- ordisurf(NMDS ~ metadata.nmds$TZ, plot=FALSE)
@@ -1317,7 +1322,7 @@ for (i in hab.labels$Treatment) {
 hab.labels$n <- paste0("n=", hab.labels$n)
 
 #Plot boxplot
-gg.hab <- ggplot(abund.hab.df, aes(x=Count, y=Habitat, fill=Habitat)) +
+gg.abund <- ggplot(abund.hab.df, aes(x=Count, y=Habitat, fill=Habitat)) +
   geom_boxploth(show.legend=FALSE) +
   geom_text(data=hab.labels,
             aes(x=pos, y=Treatment, label=n),
@@ -1347,7 +1352,7 @@ gg.hab <- ggplot(abund.hab.df, aes(x=Count, y=Habitat, fill=Habitat)) +
 tiff(file=paste0("Figure_4-", Sys.Date(), ".tiff"), height=18, width=20, units="cm", res=300)
 ggpubr::ggarrange(ggpubr::ggarrange(gg.nmds1, gg.nmds2, common.legend=TRUE),
                   ggpubr::ggarrange(gg.pwperm,
-                                    egg::ggarrange(gg.div, gg.hab, ncol=1, labels=c("C", "D"),
+                                    egg::ggarrange(gg.div, gg.abund, ncol=1, labels=c("C", "D"),
                                                    label.args=list(gp=grid::gpar(font=2, cex=1.2))),
                                     ncol=2, labels=c("B", "")),
                   ncol=1, heights=c(2,1), labels=c("A", ""))
@@ -1369,8 +1374,8 @@ BS[(BS<70)] <- ""
 #Replace underscores in tip labels
 phy$tip.label <- gsub("_", " ", phy$tip.label)
 #Replace FIESC species names
-fiesc <- read.csv("data/FIESC_names.csv", header=FALSE)
-phy$tip.label[match(fiesc$V1, phy$tip.label)] <- paste0("Fusarium ",fiesc$V2, " ", word(fiesc$V1,-1)) 
+names <- read.csv("data/tree_names.csv", header=FALSE)
+phy$tip.label[match(names$V1, phy$tip.label)] <- names$V2 
 #Create dataframe to signify OTUs from this study to colour
 tips <- data.frame(species=phy$tip.label)
 tips$colour <- ifelse(grepl("Otu", tips$species), "new", "")
@@ -1378,32 +1383,35 @@ tips$colour <- ifelse(grepl("Otu", tips$species), "new", "")
 tip.colours <- c("black","dodgerblue3")
 
 #Create dataframes for node collapsing, scaling and collapsing of species complexes for ggtree
-clades <- data.frame(node=c(225,198,240,244,166,156,154,194,245,147,246,133,140,143,249), 
-                     name=c("equiseti clade","sambucinum","tricinctum","heterosporum","nisikadoi","oxysporum","redolens","concolor","lateritium","buharicum","buxicola","dimerum","albidum","staphyleae","decemcellulare"), 
-                     offset=c(0.029,0.15,0.05,0.038,0.035,0,0,0.15,0.11,0.17,0.085,0.39,0.09,0.165,0.015), 
-                     scale=c(0.1,0.1,0.5,1,0.5,0.1,1,1,0.7,1,1,0.3,1,1,1))
+clades <- data.frame(node=c(225,198,240,244,166,156,154,194,245,147,246,133,143), 
+                     name=c("equiseti clade",
+                            "Fusarium sambucinum SC",
+                            "Fusarium tricinctum SC",
+                            "Fusarium heterosporum SC",
+                            "Fusarium nisikadoi SC",
+                            "Fusarium oxysporum SC",
+                            "Fusarium redolens SC",
+                            "Fusarium concolor SC",
+                            "Fusarium lateritium SC",
+                            "Fusarium buharicum SC",
+                            "Cyanonectria (=Fusarium buxicola SC)",
+                            "Bisifusarium (=Fusarium dimerum SC)",
+                            "Geejayessia (=Fusarium staphyleae SC)"), 
+                     offset=c(0.029,0.15,0.05,0.038,0.035,0,0,0.15,0.11,0.17,0.085,0.4,0.15), 
+                     scale=c(0.1,0.1,0.5,1,0.5,0.1,1,1,0.7,1,1,0.3,1))
 
 highlight <- data.frame(node=c(170,210,250), 
-                        name=c("fujikuroi","incarnatum-equiseti","solani"), 
-                        offset=c(0.6,0.66,0.7))
+                        name=c("Fusarium fujikuroi SC",
+                               "Fusarium incarnatum-equiseti SC",
+                               "Neocosmospora \n(=Fusarium solani SC)"), 
+                        offset=c(0.7,0.8,1.52))
 
 #Plot tree
 gg.tree <- ggtree(phy, cex=0.1) +
-  xlim(0, 2.5)
+  xlim(0, 3)
 
 for (i in 1:length(clades$node)) {
   gg.tree <- scaleClade(gg.tree, node=clades$node[i], scale=clades$scale[i])
-}
-
-for (i in 1:length(clades$node)) {
-  gg.tree <- collapse(gg.tree, node=clades$node[i], mode="max", colour="wheat2", fill="wheat2")
-  gg.tree <- gg.tree +
-    geom_cladelabel(node=clades$node[i],
-                    label=clades$name[i],
-                    barsize=0,
-                    offset=clades$offset[i],
-                    fontsize=3,
-                    fontface='bold.italic')
 }
 
 for (i in 1:length(highlight$node)) {
@@ -1419,11 +1427,30 @@ for (i in 1:length(highlight$node)) {
                  alpha=0.3, fill="wheat2")
 }
 
+for (i in 1:length(clades$node)) {
+  gg.tree <- collapse(gg.tree, node=clades$node[i], mode="max", colour="wheat2", fill="wheat2")
+  gg.tree <- gg.tree +
+    geom_cladelabel(node=clades$node[i],
+                    label=clades$name[i],
+                    barsize=0,
+                    offset=clades$offset[i],
+                    fontsize=3,
+                    fontface='bold.italic')
+}
+
 gg.tree.1 <- gg.tree %<+% tips +
   geom_tree() + 
   geom_tiplab(aes(color=colour), size=3,  fontface='italic') +
   scale_colour_manual(values=tip.colours) +
   geom_nodelab(aes(x=branch), label=BS, size=2, vjust=-0.5) +
+  geom_nodepoint(aes(subset=(node %in% c(146, 132))),
+                 size=3, colour="darkred") +
+  geom_nodelab(aes(subset=(node %in% c(146, 132))),
+               label=c("O'Donnell et al. 2020", "Lombard et al. 2015"),
+               hjust=1.1,
+               vjust=-1.2,
+               size=3,
+               colour="darkred") +
   theme(legend.position="none")
 
 #Write to file - FIGURE 5
@@ -1463,7 +1490,7 @@ for (i in hab.labels.supp$Treatment) {
 hab.labels.supp$n <- paste0("n=", hab.labels.supp$n)
 
 #Plot boxplot
-gg.hab.supp <- ggplot(abund.hab.df.supp, aes(x=Count, y=Habitat, fill=Habitat)) +
+gg.abund.supp <- ggplot(abund.hab.df.supp, aes(x=Count, y=Habitat, fill=Habitat)) +
   geom_boxploth() +
   geom_text(data=hab.labels.supp,
             aes(x=pos, y=Treatment, label=n),
@@ -1489,11 +1516,11 @@ gg.hab.supp <- ggplot(abund.hab.df.supp, aes(x=Count, y=Habitat, fill=Habitat)) 
         legend.text=element_text(size=5),
         plot.margin=unit(c(10, 35, 0, 10), "pt")) +
   coord_cartesian(clip = 'off')
-plot(gg.hab.supp)
+plot(gg.abund.supp)
 
 #Write to file - SUPPLEMENTARY FIGURE 3
 tiff(file=paste0("Supplementary_Figure_3-", Sys.Date(), ".tiff"), height=7.5, width=10, units="cm", res=300)
-gg.hab.supp
+gg.abund.supp
 dev.off()
 
 
@@ -1622,7 +1649,7 @@ for (i in c("Ascomycota", "Basidiomycota", "Fungi phy.")) {
 
 
 #Percentage of endophytes that were Lasiodiplodia, Aspergillus and Fusarium
-for (i in c("Lasiodiplodia", "Aspergillus", "Fusarium")) {
+for (i in c("Lasiodiplodia", "Fusarium", "Aspergillus")) {
   print(paste0(i, ", ", length(grep(i, df$Genus)), ", ", round(length(grep(i, df$Genus)) / length(df$Genus) * 100), "%"))
 }
 #Proportion of all endophytes belonging to those three genera
@@ -1631,3 +1658,123 @@ for (i in c("Lasiodiplodia", "Aspergillus", "Fusarium")) {
 #Percentage of significantly supported branches in tree
 length(which(as.numeric(BS) >= 70)) / length(BS) * 100
 
+
+########################
+## GRAPHICAL ABSTRACT ##
+########################
+
+#Read in image of seeds and cultures
+img <- readPNG("Seeds_cultures.png")
+
+#Plot image as ggplot
+gg.img <- ggplot() + 
+  background_image(img) +
+  coord_fixed(xlim=c(0, dim(img)[2]), 
+              ylim=c(0, dim(img)[1]), 
+              expand = FALSE) +
+  ggtitle("Fungal endophytes from\nstored wild banana seeds") +
+  theme_void() +
+  theme(plot.title=element_text(size=15, face="bold", margin=margin(0, 0, 20, 0), hjust=0.5))
+
+#Adapt NMDS plot
+gg.nmds.abs <- ggplot() +
+  geom_contour(data=nmds.ordi.germ.gg, 
+               aes(x=x, y=y, z=z),
+               colour="dimgrey",
+               binwidth=5, 
+               show.legend=FALSE,
+               size=0.3) +
+  geom_label_contour(data=nmds.ordi.germ.gg,
+                     aes(x=x, y=y, z=z),
+                     colour="dimgrey",
+                     binwidth=5,
+                     size=2,
+                     label.size=NA) +
+  stat_ellipse(data=metadata.nmds,
+               aes(x=NMDS1, y=NMDS2, fill=Habitat.summary, colour=Habitat.summary),
+               alpha=0.15,
+               lty="dotted",
+               geom="polygon",
+               type='t',
+               size=0.4,
+               show.legend=FALSE) +
+  geom_point(data=metadata.nmds,
+             aes(x=NMDS1, y=NMDS2, colour=Habitat.summary, shape=MusaSpecies),
+             size=2) +
+  geom_text_repel(data=otu.gg,
+                  aes(x=NMDS1, y=NMDS2, label=label),
+                  fontface="italic",
+                  size=3,
+                  show.legend=FALSE) +
+  geom_text(aes(x=-1.2, y=-3),
+            label=paste("stress=",round(NMDS$stress, 2)),
+            size=3) +
+  geom_text(aes(x=1, y=3),
+            label="Germination rate",
+            fontface="bold",
+            size=4) +
+  geom_text(aes(x=1, y=2.75),
+            label=paste0("ordisurf: adj. R=", round(summary(nmds.ordi.germ)$r.sq, 2),
+                         " p=", round(summary(nmds.ordi.germ)$s.table[4], 3)),
+            size=3) +
+  geom_curve(aes(x=1, y=2.5, xend=0.3, yend=0.6),
+             size=1,
+             angle=90,
+             curvature=0.1,
+             arrow=arrow(length=unit(0.03, "npc"))) +
+  scale_shape_manual(values=c(15:17)) +
+  scale_color_manual(values=c("#79EC14","#F9FF00","#fb9a99","#6FD4FF"),
+                     name="Habitat") +
+  scale_fill_manual(values=c("#79EC14","#F9FF00","#fb9a99","#6FD4FF")) +
+  guides(fill=FALSE,
+         shape=FALSE,
+         colour=guide_legend(override.aes=list(size=5))) +
+  xlab("NMDS1") +
+  ylab("NMDS2") +
+  theme_bw() +
+  theme(legend.text.align=0,
+        axis.text=element_blank(),
+        axis.ticks=element_blank(),
+        aspect.ratio=1,
+        panel.grid=element_blank(),
+        legend.position="top",
+        legend.box="vertical",
+        plot.margin=margin(0, 5, 0, 5),
+        legend.margin=margin(0, 0, 0, 0),
+        legend.text=element_text(size=11),
+        legend.title=element_text(size=14, face="bold"),
+        plot.title.position="plot") +
+  coord_fixed(clip="off")
+
+#Adapt abundance plot
+gg.abund.abs <- gg.abund +
+  scale_x_continuous(name="Abundance",
+                     expand=c(0, 0)) +
+  theme(axis.title.x=element_text(margin=unit(c(2, 0, 0, 0), "mm"), size=15, face="bold"),
+        axis.text=element_text(size=8),
+        axis.text.y=element_blank(),
+        plot.margin=unit(c(10, 40, 5, 10), "pt")) +
+  coord_cartesian(clip="off")
+
+#Adapt diversity plot
+gg.div.abs <- gg.div +
+  scale_x_continuous(name="Diversity",
+                     expand=expansion(mult=c(0, 0.1))) +
+  scale_fill_manual(values=c("#6FD4FF", "#F9FF00", "#79EC14", "#fb9a99")) +
+  theme_minimal() +
+  theme(axis.title.x=element_text(margin=unit(c(2, 0, 0, 0), "mm"), size=15, face="bold"),
+        axis.title.y=element_blank(),
+        axis.text=element_text(size=8),
+        axis.text.y=element_blank(),
+        panel.spacing.x=unit(0.5, "in"),
+        plot.margin=unit(c(5, 40, 10, 10), "pt")) +
+  coord_cartesian(clip="off")
+
+#Write to file
+png(file=paste0("Graphical-abstract-", Sys.Date(), ".png"), height=5, width=12.5, units="in", res=300)
+ggarrange(gg.img,
+          gg.nmds.abs,
+          ggarrange(gg.div.abs, gg.abund.abs, ncol=1),
+          ncol=3,
+          widths=c(1, 1.5, 1))
+dev.off()
