@@ -668,6 +668,9 @@ for (i in 1:length(rownames(otu.count.methods))) {
 #Remove rows with no occurrences
 otu.count.methods <- otu.count.methods[-which(rowSums(otu.count.methods) == 0),]
 
+#betadisper by methods
+anova(betadisper(vegdist(otu.count.methods, method="bray"), sub(".*\\.", "", rownames(otu.count.methods))))
+
 #ANOSIM by methods
 method.anosim <- anosim(otu.count.methods, sub(".*\\.", "", rownames(otu.count.methods)), distance="bray", permutations=999)
 
