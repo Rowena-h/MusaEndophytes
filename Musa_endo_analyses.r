@@ -25,6 +25,7 @@ library(grid)
 library(metR)
 library(multcompView)
 library(plyr)
+library(png)
 library(reshape2)
 library(RVAideMemoire)
 library(stringr)
@@ -195,7 +196,7 @@ classification.df <- rbind(unite.class.asco, unite.class.nonasco)
 #Update supplementary table with clashes and consensus
 nonasco.table <- cbind(nonasco.table, unite.class.nonasco[match(nonasco.table$OTU, unite.class.nonasco$OTU), c(11, 4:10)])
 colnames(nonasco.table) <- c(colnames(nonasco.table)[1:12], "ord.tbas", "phy.tbas", "clash", "sp.consensus", "gen.consensus", "fam.consensus", "ord.consensus", "class.consensus", "phy.consensus", "king.consensus")
-write.csv(rbind.fill(asco.table, nonasco.table), "Supplementary_Table_3.csv", row.names=FALSE)
+write.csv(rbind.fill(asco.table, nonasco.table), "Supplementary_Data_Sheet_1.csv", row.names=FALSE)
 
 
 #Read in ITS OTU mapping from USEARCH
@@ -403,7 +404,7 @@ gg.accum <- ggplot(spec.accum.df, aes(x=individual, y=richness, color=musa)) +
 
 
 #Write to file - FIGURE 1
-tiff(file=paste0("Figure_1-", Sys.Date(), ".tiff"), height=18, width=15, units="cm", res=300)
+tiff(file=paste0("Figure_1-", Sys.Date(), ".tiff"), height=18, width=15, units="cm", res=300, compression="lzw")
 ggpubr::ggarrange(gg.seed, gg.accum, nrow=2, heights=c(1.5,1))
 dev.off()
 
@@ -624,7 +625,7 @@ gg.pie <- ggplot(pie.df) +
 
 
 #Write to file - FIGURE 2
-tiff(file=paste0("Figure_2-", Sys.Date(), ".tiff"), height=26, width=20, units="cm", res=300)
+tiff(file=paste0("Figure_2-", Sys.Date(), ".tiff"), height=26, width=20, units="cm", res=300, compression="lzw")
 ggpubr::ggarrange(gg.tbas, gg.pie, heights=c(1,1.5), ncol=1)
 dev.off()
 
@@ -782,7 +783,7 @@ gg.euler <- gg.euler +
   theme(legend.position="none")
 
 #Write to file - FIGURE 3
-tiff(file=paste0("Figure_3-", Sys.Date(), ".tiff"), height=12, width=18, units="cm", res=300)
+tiff(file=paste0("Figure_3-", Sys.Date(), ".tiff"), height=12, width=18, units="cm", res=300, compression="lzw")
 gg.euler
 dev.off()
 
@@ -809,7 +810,7 @@ NMDS.scree <- function(x) {
 }
 
 #Write to file scree and stress plot - SUPPLEMENTARY FIGURE 1
-tiff(file=paste0("Supplementary_Figure_1-", Sys.Date(), ".tiff"), height=20, width=17, units="cm", res=300)
+tiff(file=paste0("Supplementary_Figure_1-", Sys.Date(), ".tiff"), height=15, width=12, units="cm", res=300, compression="lzw")
 #Plot screeplot
 par(mfrow=c(2,1), mar=c(4,4,2,2))
 NMDS.scree(otu.count.nmds)
@@ -981,7 +982,7 @@ gg.disp <- ggplot(disp.df, aes(x=distances, y=hab)) +
   coord_cartesian(clip="off")
 
 #Write to file - SUPPLEMENTARY FIGURE 2
-tiff(file=paste0("Supplementary_Figure_2-", Sys.Date(), ".tiff"), height=7, width=12, units="cm", res=300)
+tiff(file=paste0("Supplementary_Figure_2-", Sys.Date(), ".tiff"), height=7, width=12, units="cm", res=300, compression="lzw")
 gg.disp
 dev.off()
 
@@ -1352,7 +1353,7 @@ gg.abund <- ggplot(abund.hab.df, aes(x=Count, y=Habitat, fill=Habitat)) +
 
 
 #Write to file - FIGURE 4
-tiff(file=paste0("Figure_4-", Sys.Date(), ".tiff"), height=18, width=20, units="cm", res=300)
+tiff(file=paste0("Figure_4-", Sys.Date(), ".tiff"), height=18, width=20, units="cm", res=300, compression="lzw")
 ggpubr::ggarrange(ggpubr::ggarrange(gg.nmds1, gg.nmds2, common.legend=TRUE),
                   ggpubr::ggarrange(gg.pwperm,
                                     egg::ggarrange(gg.div, gg.abund, ncol=1, labels=c("C", "D"),
@@ -1457,7 +1458,7 @@ gg.tree.1 <- gg.tree %<+% tips +
   theme(legend.position="none")
 
 #Write to file - FIGURE 5
-tiff(file=paste0("Figure_5-", Sys.Date(), ".tiff"), height=30, width=20, units="cm", res=300)
+tiff(file=paste0("Figure_5-", Sys.Date(), ".tiff"), height=30, width=20, units="cm", res=300, compression="lzw")
 plot(gg.tree.1)
 dev.off()
 
@@ -1522,13 +1523,13 @@ gg.abund.supp <- ggplot(abund.hab.df.supp, aes(x=Count, y=Habitat, fill=Habitat)
 plot(gg.abund.supp)
 
 #Write to file - SUPPLEMENTARY FIGURE 3
-tiff(file=paste0("Supplementary_Figure_3-", Sys.Date(), ".tiff"), height=7.5, width=10, units="cm", res=300)
+tiff(file=paste0("Supplementary_Figure_3-", Sys.Date(), ".tiff"), height=7.5, width=10, units="cm", res=300, compression="lzw")
 gg.abund.supp
 dev.off()
 
 
 ######################################################
-## SUPPLEMENTARY TABLE 4 - OTUs FOUND OUTSIDE SEEDS ##
+## SUPPLEMENTARY TABLE 3 - OTUs FOUND OUTSIDE SEEDS ##
 ######################################################
 
 #Add OTU to metadata dataframe
@@ -1551,7 +1552,7 @@ for (i in 1:length(df.controls$OTU)) {
 #Remove duplicate rows
 df.controls <- unique(df.controls)
 #Write to file
-write.csv(df.controls, "Supplementary_Table_4.csv", row.names=FALSE)
+write.csv(df.controls, "Supplementary_Table_3.csv", row.names=FALSE)
 
 
 ####################
