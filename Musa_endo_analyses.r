@@ -1464,7 +1464,7 @@ dev.off()
 
 
 #################################################################################################
-## SUPPLEMENTARY Figure 2 - Abundance including oil palm plantation and botanic garden habitat ##
+## SUPPLEMENTARY Figure 3 - Abundance including oil palm plantation and botanic garden habitat ##
 #################################################################################################
 
 #Make dataframe of fungi per Musa individual
