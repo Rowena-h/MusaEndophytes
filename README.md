@@ -2,7 +2,7 @@
 
 ![Graphical abstract](https://github.com/Rowena-h/MusaEndophytes/blob/main/Graphical-abstract.png)
 
-Script and data for Hill et al. Seed banks as incidental fungi banks: fungal endophyte diversity in stored banana crop wild relative seeds
+Script and data for [Hill et al. (2021) Seed Banks as Incidental Fungi Banks: Fungal Endophyte Diversity in Stored Seeds of Banana Wild Relatives. Front. Microbiol. 12:643731. doi: 10.3389/fmicb.2021.643731](https://www.frontiersin.org/articles/10.3389/fmicb.2021.643731/full)
 
 Main OTU classification and ecology analysis script:
 [Musa_endo_analyses.r](https://github.com/Rowena-h/MusaEndophytes/blob/main/Musa_endo_analyses.r)
