@@ -1,0 +1,53 @@
+cff-version: 1.2.0
+message: "If you use this, please cite it as below."
+authors:
+- family-names: "Hill"
+  given-names: "Rowena"
+  orcid: "https://orcid.org/0000-0002-1046-5528"
+- family-names: "Llewellyn"
+  given-names: "Theo"
+- family-names: "Downes"
+  given-names: "Elizabeth"
+  family-names: "Oddy"
+  given-names: "Joseph"
+- family-names: "MacIntosh"
+  given-names: "Catriona"
+- family-names: "Kallow"
+  given-names: "Simon"
+- family-names: "Panis"
+  given-names: "Bart"
+- family-names: "Dickie"
+  given-names: "John B."
+- family-names: "Gaya"
+  given-names: "Ester"
+title: "Musa Endophytes"
+url: "https://github.com/Rowena-h/MusaEndophytes"
+preferred-citation:
+  type: article
+  authors:
+  - family-names: "Hill"
+    given-names: "Rowena"
+    orcid: "https://orcid.org/0000-0002-1046-5528"
+  - family-names: "Llewellyn"
+    given-names: "Theo"
+  - family-names: "Downes"
+    given-names: "Elizabeth"
+  - family-names: "Oddy"
+    given-names: "Joseph"
+  - family-names: "MacIntosh"
+    given-names: "Catriona"
+  - family-names: "Kallow"
+    given-names: "Simon"
+  - family-names: "Panis"
+    given-names: "Bart"
+  - family-names: "Dickie"
+    given-names: "John B."
+  - family-names: "Gaya"
+    given-names: "Ester"
+  doi: "10.3389/fmicb.2021.643731"
+  journal: "Frontiers in Microbiology"
+  month: 3
+  start: 643731 # First page number
+  title: "Seed Banks as Incidental Fungi Banks: Fungal Endophyte Diversity in Stored Seeds of Banana Wild Relatives"
+  volume: 12
+  year: 2021
